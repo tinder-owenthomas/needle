@@ -17,7 +17,8 @@ clean:
 build:
 	cd $(GENERATOR_FOLDER) && swift build $(SWIFT_BUILD_FLAGS)
 
-install: uninstall archive_generator
+install: uninstall
+	make archive_generator
 
 uninstall:
 	rm -f "$(BINARY_FOLDER)/needle"
