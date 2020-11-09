@@ -1,5 +1,6 @@
 BINARY_FOLDER_PREFIX?=/usr/local
 BINARY_FOLDER=$(BINARY_FOLDER_PREFIX)/bin/
+LIBEXEC_FOLDER=$(BINARY_FOLDER_PREFIX)/libexec/
 GENERATOR_FOLDER=Generator
 GENERATOR_ARCHIVE_PATH=$(shell cd $(GENERATOR_FOLDER) && swift build $(SWIFT_BUILD_FLAGS) --show-bin-path)/needle
 GENERATOR_VERSION_FOLDER_PATH=$(GENERATOR_FOLDER)/Sources/needle
@@ -16,9 +17,7 @@ clean:
 build:
 	cd $(GENERATOR_FOLDER) && swift build $(SWIFT_BUILD_FLAGS)
 
-install: uninstall clean build archive_generator
-	install -d "$(BINARY_FOLDER)"
-	install "$(GENERATOR_FOLDER)/bin/needle" "$(GENERATOR_FOLDER)/bin/$(SWIFT_SYNTAX_DYLIB)" "$(BINARY_FOLDER)"
+install: uninstall archive_generator
 
 uninstall:
 	rm -f "$(BINARY_FOLDER)/needle"
@@ -50,3 +49,4 @@ archive_generator: clean build
 	mv $(GENERATOR_ARCHIVE_PATH) $(GENERATOR_FOLDER)/bin/
 	cp $(XCODE_PATH)/Toolchains/XcodeDefault.xctoolchain/usr/lib/swift/macosx/$(SWIFT_SYNTAX_DYLIB) $(GENERATOR_FOLDER)/bin/
 	install_name_tool -change @rpath/$(SWIFT_SYNTAX_DYLIB) @executable_path/$(SWIFT_SYNTAX_DYLIB) $(GENERATOR_FOLDER)/bin/needle
+	install_name_tool -add_rpath @executable_path/../libexec/$(SWIFT_SYNTAX_DYLIB) $(GENERATOR_FOLDER)/bin/needle
